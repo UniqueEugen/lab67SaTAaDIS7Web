@@ -6,10 +6,11 @@ import java.util.List;
 
 import com.example.lab67sataadis7web.data.main.GetAnimalsImpl;
 import com.example.lab67sataadis7web.data.main.animalsXML.Entity;
+import jakarta.servlet.ServletException;
 import jakarta.servlet.http.*;
 import jakarta.servlet.annotation.*;
 
-@WebServlet(name = "helloServlet", value = "/hello-servlet")
+@WebServlet(name = "animalMove", value = "/animal-move")
 public class HelloServlet extends HttpServlet {
     private String message;
 
@@ -17,19 +18,14 @@ public class HelloServlet extends HttpServlet {
         message = "Hello World!";
     }
 
-    public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
+    public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
         response.setContentType("text/html");
-        List<Entity> animals = GetAnimalsImpl.getInstance().getAnimals();
-        PrintWriter out = response.getWriter();
-        out.println("<html><body>");
-        out.println("<table>");
-        out.println("<tr><td>Вид</td><td>Подвид</td><td>Семейство</td><td>Цена</td><td>Описание</td></tr>");
-        animals.forEach((animal) -> {
-            String var10001 = animal.getKind();
-            out.println("<tr><td>" + var10001 + "</td><td>" + animal.getSubspecies() + "</td><td>" + animal.getType() + "</td><td>" + animal.getPrice() + "</td><td>" + animal.getDescription() + "</td></tr>");
-        });
-        out.println("</table>");
-        out.println("</body></html>");
+        request.setAttribute("moveType", GetAnimalsImpl.getInstance().getAnimal( request.getParameter("id")).move());
+        request.setAttribute("message", "<script>" +
+                "var dialog = document.querySelector('dialog');"+
+                "dialog.show();"+
+                "</script>");
+        getServletContext().getRequestDispatcher("/index.jsp").forward(request,response);
     }
 
     public void destroy() {
